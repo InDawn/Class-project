@@ -1,62 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>출석 조회</title>
   <style>
-    body { font-family: Arial; padding: 40px; }
-    ul { list-style: none; padding: 0; }
-    li { padding: 8px 0; border-bottom: 1px solid #ccc; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      margin: 0;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.05);
+    }
+
+    li {
+      padding: 12px 16px;
+      border-bottom: 1px solid #ddd;
+      font-size: 1.2rem;
+    }
+
+    li:last-child {
+      border-bottom: none;
+    }
+
     button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #007bff;
+      width: 100%;
+      padding: 14px;
+      margin-top: 20px;
+      font-size: 1rem;
+      background-color: crimson;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       cursor: pointer;
-      margin-top: 20px;
     }
 
     button:hover {
-      background-color: #0056b3;
+      background-color: darkred;
     }
   </style>
 </head>
 <body>
-  <h1>출석완료 학생</h1>
-  <ul id="studentList"></ul>
-  <button onclick="clearList()">초기화</button>
+  <div class="container">
+    <h1>출석완료 학생</h1>
+    <ul id="studentList"></ul>
+    <button onclick="clearList()">🗑️ 초기화</button>
+  </div>
 
   <script>
-    const list = JSON.parse(localStorage.getItem("checkedIn")) || [];
-    const ul = document.getElementById("studentList");
-    list.forEach(name => {
-      const li = document.createElement("li");
-      li.textContent = name;
-      ul.appendChild(li);
-    });
-
     function loadList() {
-    const list = JSON.parse(localStorage.getItem("checkedIn")) || [];
-    const ul = document.getElementById("studentList");
-    ul.innerHTML = ""; // Clear existing list
-    list.forEach(name => {
-      const li = document.createElement("li");
-      li.textContent = name;
-      ul.appendChild(li);
-    });
-}
-    function clearList() 
-    { if (confirm("출석 현황을 초기화하시겠습니까?")) {
-    localStorage.removeItem("checkedIn");
-    loadList(); } }
+      const list = JSON.parse(localStorage.getItem("checkedIn")) || [];
+      const ul = document.getElementById("studentList");
+      ul.innerHTML = ""; // Clear existing list
 
+      list.forEach(name => {
+        const li = document.createElement("li");
+        li.textContent = name;
+        ul.appendChild(li);
+      });
+    }
 
-  loadList();
+    function clearList() {
+      if (confirm("출석 현황을 초기화하시겠습니까?")) {
+        localStorage.removeItem("checkedIn");
+        loadList();
+      }
+    }
 
-  setInterval(loadList, 1000);
+    loadList();
+    setInterval(loadList, 1000); // Auto-refresh every second
   </script>
 </body>
 </html>
