@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Check-in Page</title>
+  <style>
+    body { font-family: Arial; padding: 0px; position: absolute; top: 150px; left: 400px; font-size: 64px;}
+    input {
+  position: absolute;
+  top: 300px;
+  left: 50px;
+  width: 600px;
+  height: 75px;;
+}
+
+button {
+  position: absolute;
+  width: 608px;
+  top: 390px;
+  left: 50px;
+  height: 75px;
+}
+
+  </style>
+</head>
+<body>
+  <h1>1-4 교실 출석</h1>
+  <input id="nameInput" type="text" placeholder="공백 없이 자신의 이름을 입력해주세요" />
+  <button onclick="checkIn()">출석 확인</button>
+  
+
+  <script>
+    function checkIn() {
+      const name = document.getElementById("nameInput").value.trim();
+      if (name) {
+        // Get current list from localStorage
+        let list = JSON.parse(localStorage.getItem("checkedIn")) || [];
+        list.push(name);
+        localStorage.setItem("checkedIn", JSON.stringify(list));
+        alert(`${name}님, 출석 확인되었습니다!`);
+        document.getElementById("nameInput").value = "";
+      } else {
+        alert("이름을 입력해주세요.");
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>출석 조회</title>
+  <style>
+    body { font-family: Arial; padding: 40px; }
+    ul { list-style: none; padding: 0; }
+    li { padding: 8px 0; border-bottom: 1px solid #ccc; }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>출석완료 학생</h1>
+  <ul id="studentList"></ul>
+  <button onclick="clearList()">초기화</button>
+
+  <script>
+    const list = JSON.parse(localStorage.getItem("checkedIn")) || [];
+    const ul = document.getElementById("studentList");
+    list.forEach(name => {
+      const li = document.createElement("li");
+      li.textContent = name;
+      ul.appendChild(li);
+    });
+
+    function loadList() {
+    const list = JSON.parse(localStorage.getItem("checkedIn")) || [];
+    const ul = document.getElementById("studentList");
+    ul.innerHTML = ""; // Clear existing list
+    list.forEach(name => {
+      const li = document.createElement("li");
+      li.textContent = name;
+      ul.appendChild(li);
+    });
+}
+    function clearList() 
+    { if (confirm("출석 현황을 초기화하시겠습니까?")) {
+    localStorage.removeItem("checkedIn");
+    loadList(); } }
+
+
+  loadList();
+
+  setInterval(loadList, 1000);
+  </script>
+</body>
+</html>
