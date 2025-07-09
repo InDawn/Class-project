@@ -16,7 +16,6 @@
       min-height: 100vh;
       background-color: #f5f5f5;
     }
-
     .container {
       max-width: 600px;
       width: 90%;
@@ -24,33 +23,27 @@
       flex-direction: column;
       gap: 20px;
     }
-
     h1 {
       font-size: 2.5rem;
       text-align: center;
       margin-bottom: 20px;
     }
-
-    input {
+    input, button {
       width: 100%;
       padding: 16px;
       font-size: 1.2rem;
       box-sizing: border-box;
-      border: 1px solid #ccc;
       border-radius: 8px;
     }
-
+    input {
+      border: 1px solid #ccc;
+    }
     button {
-      width: 100%;
-      padding: 16px;
-      font-size: 1.2rem;
       background-color: #007bff;
       color: white;
       border: none;
-      border-radius: 8px;
       cursor: pointer;
     }
-
     button:hover {
       background-color: #0056b3;
     }
@@ -59,23 +52,38 @@
 <body>
   <div class="container">
     <h1>1-4 교실 출석</h1>
-    <input id="nameInput" type="text" placeholder="공백 없이 자신의 이름을 입력해주세요" />
-    <button onclick="checkIn()">출석 확인</button>
+    <input id="nameInput" type="text" placeholder="이름을 입력하세요" />
+    <button id="checkinButton">출석 확인</button>
   </div>
 
-  <script>
-    function checkIn() {
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCKEHK8cGE5v0aBOMWTDF50cueKYn08pAs",
+      authDomain: "classproject-indawn.firebaseapp.com",
+      databaseURL: "https://classproject-indawn-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "classproject-indawn",
+      storageBucket: "classproject-indawn.appspot.com",
+      messagingSenderId: "364155574132",
+      appId: "1:364155574132:web:2f9cf363e657078d717e21"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const checkinRef = ref(db, "checkedIn");
+
+    document.getElementById("checkinButton").addEventListener("click", () => {
       const name = document.getElementById("nameInput").value.trim();
       if (name) {
-        let list = JSON.parse(localStorage.getItem("checkedIn")) || [];
-        list.push(name);
-        localStorage.setItem("checkedIn", JSON.stringify(list));
+        push(checkinRef, name);
         alert(`${name}님, 출석 확인되었습니다!`);
         document.getElementById("nameInput").value = "";
       } else {
         alert("이름을 입력해주세요.");
       }
-    }
+    });
   </script>
 </body>
 </html>
