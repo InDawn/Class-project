@@ -52,7 +52,7 @@
 <body>
   <div class="container">
     <h1>1-4 교실 출석</h1>
-    <input id="nameInput" type="text" placeholder="이름을 입력하세요" />
+    <input id="nameInput" type="text" placeholder="이름을 입력하세요" autofocus />
     <button id="checkinButton">출석 확인</button>
   </div>
 
@@ -74,15 +74,30 @@
     const db = getDatabase(app);
     const checkinRef = ref(db, "checkedIn");
 
-    document.getElementById("checkinButton").addEventListener("click", () => {
+    function submitCheckIn() {
       const name = document.getElementById("nameInput").value.trim();
       if (name) {
-        push(checkinRef, name);
-        alert(`${name}님, 출석 확인되었습니다!`);
-        document.getElementById("nameInput").value = "";
+        const entry = name;
+        // To save with timestamp, use: { name, time: Date.now() }
+        push(checkinRef, entry)
+          .then(() => {
+            alert(`${name}님, 출석 확인되었습니다!`);
+            document.getElementById("nameInput").value = "";
+          })
+          .catch((error) => {
+            alert("❌ 출석 실패: " + error.message);
+            console.error("Firebase push error:", error);
+          });
       } else {
         alert("이름을 입력해주세요.");
       }
+    }
+
+    document.getElementById("checkinButton").addEventListener("click", submitCheckIn);
+
+    // Allow pressing Enter to submit
+    document.getElementById("nameInput").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") submitCheckIn();
     });
   </script>
 </body>
