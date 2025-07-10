@@ -81,7 +81,7 @@
         // To save with timestamp, use: { name, time: Date.now() }
         push(checkinRef, entry)
           .then(() => {
-            alert(`${name}님, 출석 확인되었습니다!`);
+            alert(`${name}님, 출석 확인되었습니다! \n ${Date.now()}`);
             document.getElementById("nameInput").value = "";
           })
           .catch((error) => {
