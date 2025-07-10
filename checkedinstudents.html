@@ -93,7 +93,9 @@
       ul.innerHTML = "";
       const data = snapshot.val();
       if (data) {
-        Object.values(data).forEach((name) => {
+        Object.values(data).forEach((entry) => {
+          const name: entry.name;
+          const time: entry.time;
           const li = document.createElement("li");
           li.textContent = name, time
           ul.appendChild(li);
