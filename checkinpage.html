@@ -77,10 +77,10 @@
     function submitCheckIn() {
       const name = document.getElementById("nameInput").value.trim();
       if (name) {
-        const entry = { name, time: Date.now() };
+        const entry = { name, time: new Date().toLocaleString("ko-KR", { hour12: false }) };
         push(checkinRef, entry)
           .then(() => {
-            alert(`${name}님, 출석 확인되었습니다! \n ${Date.now()}`);
+            alert(`${name}님, 출석 확인되었습니다! \n ${new Date().toLocaleString("ko-KR", { hour12: false })}`);
             document.getElementById("nameInput").value = "";
           })
           .catch((error) => {
