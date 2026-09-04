@@ -42,8 +42,6 @@ Use `--prefix`, `--email-domain`, or `--password` when the test environment requ
 
 After a run, non-secret results are written to `registration-results.json`. Passwords are always redacted. When a registration fails, a `registration-error-NNNN.png` screenshot is also saved to help identify a changed selector or validation rule.
 
-The runner waits for client-side rendering, recognizes spaced labels such as `회원 가입`, can enter through a login view, and checks the common `/signup`, `/register`, and `/join` routes. A structural selector failure stops the run immediately instead of repeating the same failure ten times; its error now includes the current URL, page title, and visible text summary.
-
 ## Inspect a changed interface
 
 Run with `--headed`, pause on the failed page, and inspect the form with Chrome DevTools. The automation first locates fields by accessible Korean/English labels and placeholders, then falls back to input attributes. If the app changes, update the locator candidates in `openRegistration`, `fillRegistration`, or `submitRegistration`.

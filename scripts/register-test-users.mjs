@@ -108,80 +108,22 @@ function delay(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
-async function findVisible(candidates, timeout = 10_000) {
-  const deadline = Date.now() + timeout;
-  do {
-    for (const candidate of candidates) {
-      const locator = candidate().first();
-      if (await locator.isVisible().catch(() => false)) return locator;
-    }
-    await delay(200);
-  } while (Date.now() < deadline);
-  return null;
-}
-
-async function firstVisible(page, candidates, description, timeout = 10_000) {
-  const locator = await findVisible(candidates, timeout);
-  if (locator) return locator;
-  const details = await page.locator("body").innerText().catch(() => "");
-  const summary = details.replace(/\s+/g, " ").trim().slice(0, 240);
-  const location = page.url();
-  const title = await page.title().catch(() => "");
-  const diagnostic = summary ? ` Page: ${title} (${location}). Visible text: ${summary}` : ` Page: ${title} (${location}).`;
-  throw new Error(`Could not find ${description}.${diagnostic}`);
-}
-
-async function registrationFormIsVisible(page) {
-  const password = page.locator('input[type="password"]:visible');
-  const file = page.locator('input[type="file"]');
-  return await password.count() > 0 && await file.count() > 0;
-}
-
-function registrationTriggers(page) {
-  return [
-    () => page.getByRole("link", { name: /회원\s*가입|가입\s*하기|가입\s*신청|sign\s*up|register|join/i }),
-    () => page.getByRole("button", { name: /회원\s*가입|가입\s*하기|가입\s*신청|sign\s*up|register|join/i }),
-    () => page.locator('a[href*="signup" i], a[href*="sign-up" i], a[href*="register" i], a[href*="join" i]'),
-    () => page.getByText(/회원\s*가입|가입\s*하기|가입\s*신청|sign\s*up|register/i)
-  ];
-}
-
-async function clickRegistrationTrigger(page, timeout) {
-  const trigger = await findVisible(registrationTriggers(page), timeout);
-  if (!trigger) return false;
-  await trigger.click();
-  await page.waitForLoadState("domcontentloaded").catch(() => {});
-  return true;
+async function firstVisible(page, candidates, description) {
+  for (const candidate of candidates) {
+    const locator = candidate().first();
+    if (await locator.isVisible().catch(() => false)) return locator;
+  }
+  throw new Error(`Could not find ${description}. Run with --headed and update its locator for the current app UI.`);
 }
 
 async function openRegistration(page, appUrl) {
-  await page.goto(appUrl, { waitUntil: "domcontentloaded", timeout: 30_000 });
-  await page.waitForLoadState("networkidle", { timeout: 12_000 }).catch(() => {});
-  if (await registrationFormIsVisible(page)) return;
-
-  if (await clickRegistrationTrigger(page, 12_000)) return;
-
-  // Some versions show 회원가입 only after opening the login view.
-  const loginTrigger = await findVisible([
-    () => page.getByRole("link", { name: /로그인|login|sign\s*in/i }),
-    () => page.getByRole("button", { name: /로그인|login|sign\s*in/i }),
-    () => page.getByText(/로그인|login|sign\s*in/i)
-  ], 3_000);
-  if (loginTrigger) {
-    await loginTrigger.click();
-    if (await registrationFormIsVisible(page)) return;
-    if (await clickRegistrationTrigger(page, 8_000)) return;
-  }
-
-  // Try common SPA routes only after no visible navigation control was found.
-  const base = new URL(appUrl);
-  for (const route of ["/signup", "/register", "/join"]) {
-    await page.goto(new URL(route, base).href, { waitUntil: "domcontentloaded" });
-    await page.waitForTimeout(1_000);
-    if (await registrationFormIsVisible(page)) return;
-  }
-
-  await firstVisible(page, registrationTriggers(page), "the 회원가입 trigger", 1_000);
+  await page.goto(appUrl, { waitUntil: "domcontentloaded" });
+  const trigger = await firstVisible(page, [
+    () => page.getByRole("link", { name: /회원가입|가입하기|sign\s*up/i }),
+    () => page.getByRole("button", { name: /회원가입|가입하기|sign\s*up/i }),
+    () => page.getByText(/회원가입|가입하기|sign\s*up/i, { exact: true })
+  ], "the 회원가입 trigger");
+  await trigger.click();
 }
 
 async function fillByMeaning(page, patterns, value, description) {
