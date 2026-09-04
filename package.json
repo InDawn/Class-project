@@ -1,0 +1,11 @@
+{
+  "name": "class-project-browser-tools",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "register:test-users": "node scripts/register-test-users.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.55.0"
+  }
+}
