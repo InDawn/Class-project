@@ -1,57 +1,72 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#f6f8fc" />
-  <title>출석 현황</title>
+  <title>출석 조회</title>
   <style>
-    :root { font-family: Pretendard, "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #172033; background: #f6f8fc; }
-    * { box-sizing: border-box; }
-    body { min-width: 320px; min-height: 100vh; margin: 0; padding: clamp(24px, 5vw, 56px) 20px; background: radial-gradient(circle at 10% 5%, rgba(114, 156, 255, .18), transparent 28rem), #f6f8fc; }
-    main { width: min(100%, 760px); margin: auto; }
-    header { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
-    .eyebrow { margin: 0 0 7px; color: #3f66d4; font-size: .78rem; font-weight: 800; letter-spacing: .08em; }
-    h1 { margin: 0; font-size: clamp(2rem, 7vw, 2.75rem); letter-spacing: -.05em; }
-    .count { flex: none; margin: 0; padding: 9px 14px; border-radius: 999px; color: #3156b8; background: #e8efff; font-size: .9rem; font-weight: 800; }
-    .panel { overflow: hidden; border: 1px solid #e5e8f0; border-radius: 20px; background: white; box-shadow: 0 18px 50px rgba(45, 65, 110, .1); }
-    ul { list-style: none; padding: 0; margin: 0; }
-    li { display: flex; align-items: center; gap: 14px; padding: 17px 20px; border-bottom: 1px solid #edf0f5; }
-    li:last-child { border: 0; }
-    .avatar { display: grid; flex: 0 0 40px; height: 40px; place-items: center; border-radius: 50%; color: #3156b8; background: #edf2ff; font-weight: 800; }
-    .student { min-width: 0; }
-    .student-name { margin: 0 0 3px; font-weight: 750; }
-    .student-time { margin: 0; color: #7b8495; font-size: .86rem; }
-    .empty { justify-content: center; min-height: 130px; color: #7b8495; }
-    .actions { display: flex; justify-content: flex-end; margin-top: 18px; }
-    button { min-height: 46px; padding: 0 17px; border: 1px solid #f0cdd1; border-radius: 12px; color: #ac2d3c; background: #fff7f8; cursor: pointer; font: inherit; font-weight: 750; transition: background 160ms ease, transform 160ms ease; }
-    button:hover:not(:disabled) { transform: translateY(-1px); background: #fdecef; }
-    button:focus-visible { outline: 3px solid #efb3ba; outline-offset: 3px; }
-    button:disabled { cursor: wait; opacity: .6; }
-    .status { min-height: 22px; margin: 12px 0 0; text-align: right; color: #697386; font-size: .88rem; }
-    .status[data-state="error"] { color: #ba2e3d; }
-    @media (max-width: 480px) { header { align-items: start; flex-direction: column; gap: 12px; } .panel { border-radius: 16px; } }
-    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      margin: 0;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+    }
+
+    li {
+      padding: 12px 16px;
+      border-bottom: 1px solid #ddd;
+      font-size: 1.2rem;
+    }
+
+    li:last-child {
+      border-bottom: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 20px;
+      font-size: 1rem;
+      background-color: crimson;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: darkred;
+    }
   </style>
 </head>
 <body>
-  <main>
-    <header>
-      <div>
-        <p class="eyebrow">1-4 CLASS</p>
-        <h1>출석 현황</h1>
-      </div>
-      <p id="studentCount" class="count">0명 출석</p>
-    </header>
-
-    <section class="panel" aria-label="출석 완료 학생">
-      <ul id="studentList" aria-live="polite">
-        <li class="empty">출석 정보를 불러오는 중입니다.</li>
-      </ul>
-    </section>
-    <div class="actions"><button id="clearButton" type="button">전체 초기화</button></div>
-    <p id="status" class="status" role="status" aria-live="polite"></p>
-  </main>
+  <div class="container">
+    <h1>출석완료 학생</h1>
+    <ul id="studentList"></ul>
+    <button onclick="clearList()">🗑️ 전체 초기화</button>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
@@ -70,67 +85,36 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const checkinRef = ref(db, "checkedIn");
-    const list = document.getElementById("studentList");
-    const count = document.getElementById("studentCount");
-    const clearButton = document.getElementById("clearButton");
-    const status = document.getElementById("status");
 
-    function renderEmpty(message) {
-      const item = document.createElement("li");
-      item.className = "empty";
-      item.textContent = message;
-      list.replaceChildren(item);
-      count.textContent = "0명 출석";
-    }
+    const ul = document.getElementById("studentList");
 
+    // Render real-time updates
     onValue(checkinRef, (snapshot) => {
-      const entries = snapshot.val() ? Object.values(snapshot.val()) : [];
-      if (!entries.length) {
-        renderEmpty("아직 출석한 학생이 없습니다.");
-        return;
-      }
-
-      const items = entries.map((entry) => {
-        const item = document.createElement("li");
-        const avatar = document.createElement("span");
-        const student = document.createElement("div");
-        const name = document.createElement("p");
-        const time = document.createElement("p");
-
-        avatar.className = "avatar";
-        avatar.setAttribute("aria-hidden", "true");
-        avatar.textContent = (entry.name || "?").charAt(0);
-        student.className = "student";
-        name.className = "student-name";
-        name.textContent = entry.name || "이름 없음";
-        time.className = "student-time";
-        time.textContent = entry.time || "시간 정보 없음";
-        student.append(name, time);
-        item.append(avatar, student);
-        return item;
-      });
-
-      list.replaceChildren(...items);
-      count.textContent = `${entries.length}명 출석`;
-      status.textContent = "";
-    }, () => renderEmpty("출석 정보를 불러오지 못했습니다."));
-
-    clearButton.addEventListener("click", async () => {
-      if (!window.confirm("출석 현황을 모두 초기화하시겠습니까?")) return;
-      clearButton.disabled = true;
-      status.textContent = "초기화하고 있습니다…";
-      status.dataset.state = "";
-      try {
-        await remove(checkinRef);
-        status.textContent = "출석 목록을 초기화했습니다.";
-      } catch (error) {
-        status.textContent = "초기화에 실패했습니다. 잠시 후 다시 시도해주세요.";
-        status.dataset.state = "error";
-        console.error("Firebase remove error:", error);
-      } finally {
-        clearButton.disabled = false;
+      ul.innerHTML = "";
+      const data = snapshot.val();
+      if (data) {
+        Object.values(data).forEach((entry) => {
+          const name= entry.name;
+          const time= entry.time;
+          const li = document.createElement("li");
+          li.textContent = `${name} - ${time}`;
+          ul.appendChild(li);
+        });
+      } else {
+        const li = document.createElement("li");
+        li.textContent = "출석자가 없습니다.";
+        ul.appendChild(li);
       }
     });
+
+    // Clear all names
+    window.clearList = function () {
+      if (confirm("출석 현황을 모두 초기화하시겠습니까?")) {
+        remove(checkinRef)
+          .then(() => alert("출석 목록이 초기화되었습니다."))
+          .catch((err) => alert("❌ 초기화 실패: " + err.message));
+      }
+    };
   </script>
 </body>
 </html>

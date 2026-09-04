@@ -1,156 +1,60 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#eef4ff" />
-  <title>1-4 교실 출석</title>
+  <title>출석 페이지</title>
   <style>
-    :root {
-      color-scheme: light;
-      font-family: Pretendard, "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: #172033;
-      background: #eef4ff;
-    }
-
-    * { box-sizing: border-box; }
-
     body {
-      min-width: 320px;
+      font-family: Arial, sans-serif;
+      font-size: 2rem;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       min-height: 100vh;
-      min-height: 100svh;
-      margin: 0;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      background:
-        radial-gradient(circle at 15% 15%, rgba(114, 156, 255, 0.24), transparent 31rem),
-        radial-gradient(circle at 90% 85%, rgba(130, 222, 205, 0.24), transparent 28rem),
-        #f6f8fc;
+      background-color: #f5f5f5;
     }
-
-    .checkin-card {
-      width: min(100%, 480px);
-      padding: clamp(28px, 7vw, 52px);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      border-radius: 28px;
-      background: rgba(255, 255, 255, 0.94);
-      box-shadow: 0 24px 70px rgba(45, 65, 110, 0.15);
+    .container {
+      max-width: 600px;
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
-
-    .badge {
-      width: fit-content;
-      margin: 0 auto 20px;
-      padding: 8px 13px;
-      border-radius: 999px;
-      color: #3156b8;
-      background: #edf2ff;
-      font-size: 0.78rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-    }
-
     h1 {
-      margin: 0;
+      font-size: 2.5rem;
       text-align: center;
-      font-size: clamp(2rem, 8vw, 2.75rem);
-      line-height: 1.15;
-      letter-spacing: -0.05em;
+      margin-bottom: 20px;
     }
-
-    .subtitle {
-      margin: 12px 0 34px;
-      color: #697386;
-      text-align: center;
-      font-size: 1rem;
-      line-height: 1.6;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 9px;
-      font-size: 0.9rem;
-      font-weight: 750;
-    }
-
     input, button {
       width: 100%;
-      min-height: 56px;
-      border-radius: 14px;
-      font: inherit;
+      padding: 16px;
+      font-size: 1.2rem;
+      box-sizing: border-box;
+      border-radius: 8px;
     }
-
     input {
-      padding: 0 17px;
-      border: 1px solid #d9deea;
-      outline: none;
-      color: #172033;
-      background: #fbfcff;
-      font-size: 1.05rem;
-      transition: border-color 160ms ease, box-shadow 160ms ease;
+      border: 1px solid #ccc;
     }
-
-    input::placeholder { color: #9aa3b3; }
-    input:focus {
-      border-color: #5277df;
-      box-shadow: 0 0 0 4px rgba(82, 119, 223, 0.14);
-    }
-
     button {
-      margin-top: 14px;
-      border: 0;
+      background-color: #007bff;
       color: white;
-      background: #3f66d4;
-      box-shadow: 0 9px 20px rgba(63, 102, 212, 0.25);
+      border: none;
       cursor: pointer;
-      font-weight: 800;
-      transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
     }
-
-    button:hover:not(:disabled) {
-      transform: translateY(-1px);
-      background: #3156bf;
-      box-shadow: 0 12px 24px rgba(63, 102, 212, 0.3);
-    }
-
-    button:focus-visible { outline: 3px solid #9eb4f4; outline-offset: 3px; }
-    button:disabled { cursor: wait; opacity: 0.7; }
-
-    .status {
-      min-height: 24px;
-      margin: 18px 0 0;
-      text-align: center;
-      color: #697386;
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
-
-    .status[data-state="success"] { color: #167454; }
-    .status[data-state="error"] { color: #ba2e3d; }
-
-    @media (max-width: 420px) {
-      body { padding: 16px; }
-      .checkin-card { border-radius: 22px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
-  <main class="checkin-card">
-    <p class="badge">EVERYTIME</p>
+  <div class="container">
     <h1>1-4 교실 출석</h1>
-    <p class="subtitle">이름을 입력하고 오늘의 출석을 완료하세요.</p>
-
-    <form id="checkinForm">
-      <label for="nameInput">학생 이름</label>
-      <input id="nameInput" name="name" type="text" placeholder="예: 홍길동" autocomplete="name" maxlength="30" required autofocus />
-      <button id="checkinButton" type="submit">출석 확인</button>
-    </form>
-    <p id="status" class="status" role="status" aria-live="polite"></p>
-  </main>
+    <input id="nameInput" type="text" placeholder="이름을 입력하세요" autofocus />
+    <button id="checkinButton">출석 확인</button>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
@@ -169,46 +73,30 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const checkinRef = ref(db, "checkedIn");
-    const form = document.getElementById("checkinForm");
-    const nameInput = document.getElementById("nameInput");
-    const button = document.getElementById("checkinButton");
-    const status = document.getElementById("status");
 
-    function showStatus(message, state = "") {
-      status.textContent = message;
-      status.dataset.state = state;
+    function submitCheckIn() {
+      const name = document.getElementById("nameInput").value.trim();
+      if (name) {
+        const entry = { name, time: new Date().toLocaleString("ko-KR", { hour12: false }) };
+        push(checkinRef, entry)
+          .then(() => {
+            alert(`${name}님, 출석 확인되었습니다! \n ${new Date().toLocaleString("ko-KR", { hour12: false })}`);
+            document.getElementById("nameInput").value = "";
+          })
+          .catch((error) => {
+            alert("❌ 출석 실패: " + error.message);
+            console.error("Firebase push error:", error);
+          });
+      } else {
+        alert("이름을 입력해주세요.");
+      }
     }
 
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const name = nameInput.value.trim();
+    document.getElementById("checkinButton").addEventListener("click", submitCheckIn);
 
-      if (!name) {
-        showStatus("이름을 입력해주세요.", "error");
-        nameInput.focus();
-        return;
-      }
-
-      button.disabled = true;
-      button.textContent = "확인 중…";
-      showStatus("출석 정보를 저장하고 있어요.");
-
-      try {
-        const checkedInAt = new Date();
-        await push(checkinRef, {
-          name,
-          time: checkedInAt.toLocaleString("ko-KR", { hour12: false })
-        });
-        form.reset();
-        showStatus(`${name}님, 출석이 완료되었습니다.`, "success");
-        nameInput.focus();
-      } catch (error) {
-        showStatus("출석에 실패했습니다. 잠시 후 다시 시도해주세요.", "error");
-        console.error("Firebase push error:", error);
-      } finally {
-        button.disabled = false;
-        button.textContent = "출석 확인";
-      }
+    // Allow pressing Enter to submit
+    document.getElementById("nameInput").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") submitCheckIn();
     });
   </script>
 </body>
