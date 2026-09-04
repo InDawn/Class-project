@@ -211,6 +211,9 @@ async function main() {
         await page.screenshot({ path: screenshot, fullPage: true }).catch(() => {});
         results.push({ ...credentials, password: "[redacted]", image, status: "failed", error: error.message, screenshot });
         console.error(`[${offset + 1}/${count}] ${credentials.username}: failed — ${error.message}`);
+        if (/Could not find/.test(error.message)) {
+          throw new Error(`The page structure did not match the automation. See ${screenshot} for the visible page.`);
+        }
       } finally {
         await context.close();
       }
